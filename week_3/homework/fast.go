@@ -1,18 +1,27 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/mailru/easyjson"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"regexp"
 	"strings"
+	"time"
 )
 
 var reg = regexp.MustCompile("@")
 var regAndroid = regexp.MustCompile("Android")
 var regMSIE = regexp.MustCompile("MSIE")
+
+//easyjson:json
+type User struct {
+	Name     string   `json:"name"`
+	Email    string   `json:"email"`
+	Browsers []string `json:"browsers"`
+}
 
 // вам надо написать более быструю оптимальную этой функции
 func FastSearch(out io.Writer) {
@@ -40,26 +49,42 @@ func FastSearch(out io.Writer) {
 	foundUsers := ""
 
 	lines := strings.Split(string(fileContents), "\n")
-
 	users := make([]map[string]interface{}, 0)
 	for _, line := range lines {
+		userstruct := User{}
+		//fmt.Printf("%v %v\n", err, line)
+		err := easyjson.Unmarshal([]byte(line), &userstruct)
+		//fmt.Printf("%v\n", userstruct.Name)
+		//fmt.Printf("%v\n", userstruct.Email)
+		//fmt.Printf("%v\n", userstruct.Browsers)
 		user := make(map[string]interface{})
-		// fmt.Printf("%v %v\n", err, line)
-		err := json.Unmarshal([]byte(line), &user)
+		user["name"] = userstruct.Name
+		user["email"] = userstruct.Email
+		browsers := []interface{}{}
+		for _, browser := range userstruct.Browsers {
+			browsers = append(browsers, browser)
+		}
+		user["browsers"] = browsers
+		//fmt.Printf("%v\n", user)
+		//time.Sleep(time.Hour)
 		if err != nil {
 			panic(err)
 		}
 		users = append(users, user)
 	}
-
+	//fmt.Printf("%v\n", users)
 	for i, user := range users {
 
 		isAndroid := false
 		isMSIE := false
-
+		//fmt.Printf("%v\n", user)
+		//time.Sleep(time.Hour)
 		browsers, ok := user["browsers"].([]interface{})
 		if !ok {
-			// log.Println("cant cast browsers")
+			log.Println("cant cast browsers")
+			fmt.Printf("%v\n", ok)
+			fmt.Printf("%v\n", user["browsers"])
+			time.Sleep(time.Hour)
 			continue
 		}
 
