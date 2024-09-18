@@ -15,7 +15,6 @@ func init() {
 
 // -----
 // go test -v
-
 func TestSearch(t *testing.T) {
 	slowOut := new(bytes.Buffer)
 	SlowSearch(slowOut)
@@ -32,7 +31,6 @@ func TestSearch(t *testing.T) {
 
 // -----
 // go test -bench . -benchmem
-
 func BenchmarkSlow(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		SlowSearch(ioutil.Discard)

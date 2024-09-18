@@ -49,7 +49,7 @@ func FastSearch(out io.Writer) {
 	foundUsers := ""
 
 	lines := strings.Split(string(fileContents), "\n")
-	users := make([]map[string]interface{}, 0)
+	users := make([]map[string]interface{}, 0, 2048)
 	for _, line := range lines {
 		userstruct := User{}
 		//fmt.Printf("%v %v\n", err, line)
@@ -60,7 +60,7 @@ func FastSearch(out io.Writer) {
 		user := make(map[string]interface{})
 		user["name"] = userstruct.Name
 		user["email"] = userstruct.Email
-		browsers := []interface{}{}
+		browsers := make([]interface{}, 0, 16)
 		for _, browser := range userstruct.Browsers {
 			browsers = append(browsers, browser)
 		}
